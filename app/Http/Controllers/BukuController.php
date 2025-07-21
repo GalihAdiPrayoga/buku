@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\buku;
+use Illuminate\Http\Request;
+
+class BukuController extends Controller
+{
+  
+    public function index()
+    {
+     $buku = buku::with('kategori')->get();
+
+        return response()->json([
+            'message' => 'List of Books',
+            'data' => $buku
+        ], 200);
+    }
+
+    public function store(Request $request)
+    {
+        $request-> validate([
+            'nama'=> 'required|string|unique:bukus|max:255',
+            'penerbit'=> 'required|string|max:255',
+            'stok'=> 'required|integer|min:1',
+            'pengarang'=> 'required|string|max:25', 
+            'kategori_id' => 'required|exists:kategoris,id',   
+            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',      
+        ]);
+        
+        $path = null;
+        if ($request->hasFile('cover')) {
+            $path = $request->file('cover')->store('covers', 'public');
+        }
+
+        $buku = buku::create([
+            'nama' => $request->nama,
+            'penerbit' => $request->penerbit,
+            'stok' => $request->stok,
+            'pengarang' => $request->pengarang,  
+            'kategori_id' => $request->kategori_id,   
+            'cover' => $path,
+                  
+        ]);
+
+        return response()->json([
+            'message' => 'buku berhasil ditambahkan',
+            'data' => $buku
+        ]);
+    }
+
+    public function show(buku $buku)
+    {
+    $buku = buku::find($buku->id);
+
+    if (!$buku) {
+        return response()->json([
+            'message' => 'Buku tidak ditemukan',
+        ], 404);
+    }
+     
+    }
+    
+    public function update(Request $request, buku $buku)
+    {
+      $request -> validate([
+        'nama'=> 'required|string|unique:bukus,nama,'.$buku->id.'|max:255',
+        'penerbit'=> 'required|string|max:255',
+        'stok'=> 'required|integer|min:1',
+        'pengarang'=> 'required|string|max:25',
+        'kategori_id' => 'required|exists:kategoris,id',
+        'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        
+      ]);
+
+      if ($request->hasFile('cover') && $buku->cover) {
+        \Storage::disk('public')->delete($buku->cover);
+      }
+
+      $buku->update([
+        'nama' => $request->nama,
+        'penerbit' => $request->penerbit,
+        'stok' => $request->stok,
+        'pengarang' => $request->pengarang,       
+        'kategori_id' => $request->kategori_id,    
+        'cover' => $request->hasFile('cover') ? $request->file('cover')->store('covers', 'public') : $buku->cover,
+      ]);
+
+      
+
+      return response()-> json([
+        'message' => 'Book updated successfully',
+        'data' => $buku
+      ]);
+    }
+
+    public function destroy(buku $buku)
+    {
+        $buku->delete();
+
+        return response()->json([
+            'message' => 'Book deleted successfully',
+        ], 200);
+    }
+}
