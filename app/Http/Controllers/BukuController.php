@@ -9,9 +9,15 @@ use Illuminate\Http\Request;
 class BukuController extends Controller
 {
   
+    protected $buku;
+
+    public function __construct(buku $buku)
+    {
+        $this->buku = $buku;
+    }
     public function index()
     {
-     $buku = buku::with('kategori','penerbit')->get();
+     $buku =  $this->buku->with('kategori','penerbit')->get();
 
 
         return response()->json([
@@ -36,7 +42,7 @@ class BukuController extends Controller
             $path = $request->file('cover')->store('covers', 'public');
         }
 
-        $buku = buku::create([
+        $buku =  $this->buku->create([
             'nama' => $request->nama,
             'penerbit_id' => $request->penerbit_id,
             'stok' => $request->stok,
@@ -54,13 +60,19 @@ class BukuController extends Controller
 
     public function show(buku $buku)
     {
-     $buku = Buku::with('kategori', 'penerbit')->find($buku->id);
+     $buku =  $this->buku->with('kategori', 'penerbit')->find($buku->id);
 
     if (!$buku) {
         return response()->json([
             'message' => 'Buku tidak ditemukan',
         ], 404);
     }
+
+    return
+    response()->json([
+        'message' => 'Detail Buku',
+        'data' => $buku
+    ], 200);
      
     }
     
@@ -99,6 +111,10 @@ class BukuController extends Controller
     public function destroy(buku $buku)
     {
         $buku->delete();
+
+        if ($buku->cover) {
+        \Storage::disk('public')->delete($buku->cover);
+    }
 
         return response()->json([
             'message' => 'Book deleted successfully',
