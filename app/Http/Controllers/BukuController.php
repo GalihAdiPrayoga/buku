@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\buku;
+use App\Models\penerbit;
 use Illuminate\Http\Request;
 
 class BukuController extends Controller
@@ -10,7 +11,8 @@ class BukuController extends Controller
   
     public function index()
     {
-     $buku = buku::with('kategori')->get();
+     $buku = buku::with('kategori','penerbit')->get();
+
 
         return response()->json([
             'message' => 'List of Books',
@@ -20,9 +22,9 @@ class BukuController extends Controller
 
     public function store(Request $request)
     {
-        $request-> validate([
+        $request->validate([
             'nama'=> 'required|string|unique:bukus|max:255',
-            'penerbit'=> 'required|string|max:255',
+            'penerbit_id'=> 'required|exists:penerbits,id',
             'stok'=> 'required|integer|min:1',
             'pengarang'=> 'required|string|max:25', 
             'kategori_id' => 'required|exists:kategoris,id',   
@@ -36,7 +38,7 @@ class BukuController extends Controller
 
         $buku = buku::create([
             'nama' => $request->nama,
-            'penerbit' => $request->penerbit,
+            'penerbit_id' => $request->penerbit_id,
             'stok' => $request->stok,
             'pengarang' => $request->pengarang,  
             'kategori_id' => $request->kategori_id,   
@@ -52,7 +54,7 @@ class BukuController extends Controller
 
     public function show(buku $buku)
     {
-    $buku = buku::find($buku->id);
+     $buku = Buku::with('kategori', 'penerbit')->find($buku->id);
 
     if (!$buku) {
         return response()->json([
@@ -64,14 +66,13 @@ class BukuController extends Controller
     
     public function update(Request $request, buku $buku)
     {
-      $request -> validate([
+      $request->validate([
         'nama'=> 'required|string|unique:bukus,nama,'.$buku->id.'|max:255',
-        'penerbit'=> 'required|string|max:255',
+        'penerbit_id'=> 'required|exists:penerbits,id',
         'stok'=> 'required|integer|min:1',
         'pengarang'=> 'required|string|max:25',
         'kategori_id' => 'required|exists:kategoris,id',
         'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        
       ]);
 
       if ($request->hasFile('cover') && $buku->cover) {
@@ -80,7 +81,7 @@ class BukuController extends Controller
 
       $buku->update([
         'nama' => $request->nama,
-        'penerbit' => $request->penerbit,
+        'penerbit_id' => $request->penerbit_id,
         'stok' => $request->stok,
         'pengarang' => $request->pengarang,       
         'kategori_id' => $request->kategori_id,    

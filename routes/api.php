@@ -5,6 +5,7 @@
     use App\Http\Controllers\AuthController;
     use App\Http\Controllers\BukuController;
     use App\Http\Controllers\KategoriController;
+    use App\Http\Controllers\PenerbitController;
 
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -14,4 +15,6 @@
         
         Route::apiResource('buku', BukuController::class);
         Route::apiResource('kategori', KategoriController::class);
+        route::apiResource('penerbit', PenerbitController::class);
+        
     });

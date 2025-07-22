@@ -8,12 +8,16 @@ class buku extends Model
 {
     protected $table = 'bukus';
 
-    protected $fillable = ['nama','pengarang','penerbit','stok','cover'];
+    protected $guarded = [];
 
     public function kategori()
 {
     return $this->belongsTo(kategori::class, 'kategori_id');
 }
+    public function penerbit()
+    {
+        return $this->belongsTo(penerbit::class);
+    }
 }
 
 
