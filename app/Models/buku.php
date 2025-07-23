@@ -18,6 +18,11 @@ class buku extends Model
     {
         return $this->belongsTo(penerbit::class);
     }
+
+    public function peminjamen()
+    {
+        return $this->belongsToMany(peminjaman::class, 'buku_peminjaman')->withPivot('jumlah');
+    }
 }
 
 

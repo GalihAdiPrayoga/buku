@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(buku::class);
     }
+
+    public function peminjamen()
+    {
+        return $this->hasMany(peminjaman::class);
+    }
 }
