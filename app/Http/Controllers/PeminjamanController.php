@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\peminjaman;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Buku;
+use App\Http\Requests\StorePeminjaman;
 
 class PeminjamanController extends Controller
 {
@@ -20,13 +23,9 @@ class PeminjamanController extends Controller
         ], 200);
     }
 
-    public function store(Request $request)
+    public function store(StorePeminjaman $request)
     {
-           $request->validate([
-        'buku_ids' => 'required|array',
-        'buku_ids.*.id' => 'required|exists:bukus,id',
-        'buku_ids.*.jumlah' => 'required|integer|min:1'
-    ]);
+         
 
     DB::beginTransaction();
 
@@ -34,7 +33,7 @@ class PeminjamanController extends Controller
         $peminjaman = Peminjaman::create([
             'user_id' => auth()->id(),
             'tanggal_pinjam' => now(),
-            'tanggal_kembali' => now()->addDays(7) // contoh
+            'tanggal_kembali' => now()->addDays(7) 
         ]);
 
         foreach ($request->buku_ids as $bukuItem) {
@@ -72,7 +71,17 @@ class PeminjamanController extends Controller
      */
     public function show(peminjaman $peminjaman)
     {
-        
+        $peminjaman = peminjaman::with('bukus')->find($peminjaman->id);
+        if (!$peminjaman) {
+            return response()->json([
+                'message' => 'Peminjaman tidak ditemukan',
+                'data' => null
+            ], 404);
+        }
+        return response()->json([
+            'message' => 'Detail Peminjaman',
+            'data' => $peminjaman
+        ], 200);
     }
 
     public function update(Request $request, peminjaman $peminjaman)
@@ -93,9 +102,6 @@ class PeminjamanController extends Controller
         ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(peminjaman $peminjaman)
     {
         $peminjaman->delete();

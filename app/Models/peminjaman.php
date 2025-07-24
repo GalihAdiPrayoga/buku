@@ -10,10 +10,10 @@ class peminjaman extends Model
 
     protected $fillable = ['user_id', 'buku_id', 'tanggal_pinjam', 'tanggal_kembali', 'status'];
 
-    public function buku()
-    {
-         return $this->belongsToMany(Buku::class, 'buku_peminjaman')->withPivot('jumlah');
+   public function bukus()
+{
+    return $this->belongsToMany(Buku::class)->withPivot('jumlah');
+}
 
-    }
 
 }

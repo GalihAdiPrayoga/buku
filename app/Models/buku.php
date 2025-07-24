@@ -11,9 +11,9 @@ class buku extends Model
     protected $guarded = [];
 
     public function kategori()
-{
-    return $this->belongsTo(kategori::class, 'kategori_id');
-}
+    {
+        return $this->belongsTo(kategori::class, 'kategori_id');
+    }
     public function penerbit()
     {
         return $this->belongsTo(penerbit::class);

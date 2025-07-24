@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\buku;
 use App\Models\penerbit;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreBuku;
+use App\Http\Requests\UpdateBuku;
 
 class BukuController extends Controller
 {
@@ -26,16 +28,9 @@ class BukuController extends Controller
         ], 200);
     }
 
-    public function store(Request $request)
+    public function store(StoreBuku $request)
     {
-        $request->validate([
-            'nama'=> 'required|string|unique:bukus|max:255',
-            'penerbit_id'=> 'required|exists:penerbits,id',
-            'stok'=> 'required|integer|min:1',
-            'pengarang'=> 'required|string|max:25', 
-            'kategori_id' => 'required|exists:kategoris,id',   
-            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',      
-        ]);
+       
         
         $path = null;
         if ($request->hasFile('cover')) {
@@ -76,16 +71,9 @@ class BukuController extends Controller
      
     }
     
-    public function update(Request $request, buku $buku)
+    public function update(UpdateBuku $request, buku $buku)
     {
-      $request->validate([
-        'nama'=> 'required|string|unique:bukus,nama,'.$buku->id.'|max:255',
-        'penerbit_id'=> 'required|exists:penerbits,id',
-        'stok'=> 'required|integer|min:1',
-        'pengarang'=> 'required|string|max:25',
-        'kategori_id' => 'required|exists:kategoris,id',
-        'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-      ]);
+     
 
       if ($request->hasFile('cover') && $buku->cover) {
         \Storage::disk('public')->delete($buku->cover);
