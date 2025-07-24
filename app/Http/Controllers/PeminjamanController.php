@@ -65,10 +65,6 @@ class PeminjamanController extends Controller
         ], 400);
     }
     }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(peminjaman $peminjaman)
     {
         $peminjaman = peminjaman::with('bukus')->find($peminjaman->id);

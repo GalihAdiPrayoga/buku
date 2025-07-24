@@ -73,8 +73,7 @@ class BukuController extends Controller
     
     public function update(UpdateBuku $request, buku $buku)
     {
-     
-
+    
       if ($request->hasFile('cover') && $buku->cover) {
         \Storage::disk('public')->delete($buku->cover);
       }

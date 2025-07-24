@@ -7,29 +7,26 @@ use Illuminate\Http\Request;
 
 class KategoriController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct()
+   {
+        $this->kategori = new kategori;
+    }
     public function index()
     {
-        $kategoris = kategori::all();
+        $kategoris = $this->kategori->all();
         return response()->json([
             'message' => 'List of Categories',
             'data' => $kategoris
         ], 200);
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
             'nama' => 'required|string|max:255|unique:kategoris,nama',
         ]);
 
-        $kategori = kategori::create([
+        $kategori = $this->kategori->create([
             'nama' => $request->nama,
         ]);
 
@@ -44,7 +41,7 @@ class KategoriController extends Controller
      */
     public function show(kategori $kategori)
     {
-        $kategori = kategori::find($kategori->id);
+        $kategori = $this->kategori->find($kategori->id);
 
         if (!$kategori) {
             return response()->json([

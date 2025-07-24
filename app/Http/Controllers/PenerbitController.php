@@ -46,7 +46,7 @@ class PenerbitController extends Controller
         }
 
         return response()->json([
-            'message' => 'Publisher Details',
+            'message' => 'Penerbit Details',
             'data' => $penerbit
         ], 200);
     }
