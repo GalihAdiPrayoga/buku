@@ -7,10 +7,15 @@ use Illuminate\Http\Request;
 
 class PenerbitController extends Controller
 {
+    public function __construct()
+    {
+        $this->penerbit = new penerbit;
+    }   
+
    
     public function index()
     {
-        $penerbits = penerbit::all();
+        $penerbits = $this->penerbit->all();
         return response()->json([
             'message' => 'List of Publishers',
             'data' => $penerbits
@@ -24,7 +29,7 @@ class PenerbitController extends Controller
             'alamat' => 'nullable|string|max:255',
         ]);
 
-        $penerbit = penerbit::create([
+        $penerbit = $this->penerbit->create([
             'nama' => $request->nama,
             'alamat' => $request->alamat,
         ]);
@@ -37,7 +42,7 @@ class PenerbitController extends Controller
 
     public function show(penerbit $penerbit)
     {
-        $penerbit = penerbit::find($penerbit->id);
+        $penerbit = $this->penerbit->find($penerbit->id);
 
         if (!$penerbit) {
             return response()->json([

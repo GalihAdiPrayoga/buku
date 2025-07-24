@@ -7,15 +7,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Buku;
 use App\Http\Requests\StorePeminjaman;
+use App\Http\Requests\UpdatePeminjaman;
+
 
 class PeminjamanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct()
+    {
+        $this->peminjaman = new peminjaman;
+    }   
     public function index()
     {
-        $peminjaman = peminjaman::with('bukus')->where('user_id', auth()->id())->get();
+        $peminjaman = $this->peminjaman->with('bukus')->where('user_id', auth()->id())->get();
 
         return response()->json([
             'message' => 'List of Peminjaman',
@@ -25,12 +28,11 @@ class PeminjamanController extends Controller
 
     public function store(StorePeminjaman $request)
     {
-         
-
+        
     DB::beginTransaction();
 
     try {
-        $peminjaman = Peminjaman::create([
+        $peminjaman = $this->peminjaman->create([
             'user_id' => auth()->id(),
             'tanggal_pinjam' => now(),
             'tanggal_kembali' => now()->addDays(7) 
@@ -67,7 +69,7 @@ class PeminjamanController extends Controller
     }
     public function show(peminjaman $peminjaman)
     {
-        $peminjaman = peminjaman::with('bukus')->find($peminjaman->id);
+        $peminjaman = $this->peminjaman->with('bukus')->find($peminjaman->id);
         if (!$peminjaman) {
             return response()->json([
                 'message' => 'Peminjaman tidak ditemukan',
@@ -80,12 +82,9 @@ class PeminjamanController extends Controller
         ], 200);
     }
 
-    public function update(Request $request, peminjaman $peminjaman)
+    public function update(UpdatePeminjaman $request, peminjaman $peminjaman)
     {
-        $request->validate([
-            'tanggal_kembali' => 'required|date',
-            'status' => 'required|in:dipinjam,dikembalikan'
-        ]);
+        // $request->validate();
 
         $peminjaman->update([
             'tanggal_kembali' => $request->tanggal_kembali,
